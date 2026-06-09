@@ -31,16 +31,19 @@
       width: 100%; padding: 12px; border: 1px solid #ddd; 
       border-radius: 10px; outline: none; font-size: 14px; resize: vertical;
     }
-    textarea { min-height: 90px; }
+    textarea { min-height: 110px; }
     textarea:focus, input:focus, select:focus { border-color: var(--yt-red); }
     
     button { 
       width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; 
       transition: 0.3s; color: white; font-size: 15px;
     }
+    button:disabled { background: #95a5a6 !important; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+    
     .btn-red { background: linear-gradient(to right, var(--yt-red), var(--yt-dark-red)); }
-    .btn-red:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,0,0,0.3); }
+    .btn-red:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,0,0,0.3); }
     .btn-green { background: #27ae60; margin-top: 10px; }
+    .btn-green:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3); }
 
     .next-video { border-left: 10px solid var(--yt-red); }
     .premium-badge { color: var(--yt-red); font-weight: bold; font-size: 12px; margin-bottom: 10px; letter-spacing: 1px; }
@@ -57,6 +60,14 @@
     .delete-btn { position: absolute; top: 10px; right: 10px; background: #e74c3c; color: white; border: none; border-radius: 5px; padding: 5px 10px; font-size: 12px; cursor: pointer; width: auto;}
 
     .hidden { display: none; }
+    
+    /* 로딩 애니메이션 */
+    .loader {
+      border: 4px solid #f3f3f3; border-top: 4px solid var(--yt-red);
+      border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite;
+      display: inline-block; vertical-align: middle; margin-right: 8px;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
@@ -73,13 +84,13 @@
           <div class="card-title">📝 채널 진단 의뢰서</div>
           
           <div class="input-group">
-            <label>채널 이름</label>
+            <label>채널 이름 (선택)</label>
             <input id="channelNameInput" type="text" placeholder="예: 코딩하는 감자" />
           </div>
 
           <div class="input-group">
-            <label>현재 채널의 가장 큰 문제점 (솔직하게)</label>
-            <textarea id="problemInput" placeholder="예: 구독자는 1만명인데 조회수가 500도 안 나옵니다. 쇼츠만 터지고 롱폼은 안 봐요."></textarea>
+            <label>현재 채널의 가장 큰 문제점 (필수)</label>
+            <textarea id="problemInput" placeholder="예: 구독자는 1만명인데 조회수가 500도 안 나옵니다. 쇼츠만 터지고 롱폼은 안 봐요. 어떻게 해야 할까요?"></textarea>
           </div>
 
           <div class="input-group">
@@ -103,14 +114,14 @@
           <div class="video-desc" id="nowDesc">분석 내용이 여기에 표시됩니다.</div>
           
           <div style="display: flex; gap: 10px;">
-            <button class="btn-red" id="completeBtn">✅ 솔루션 확인 완료 (다음 의뢰 보기)</button>
+            <button class="btn-red" id="completeBtn">✅ 솔루션 확인 완료 (기록 지우기)</button>
             <button class="btn-green" id="ttsBtn">🔊 AI 보이스 브리핑 듣기</button>
           </div>
         </div>
         
         <div id="emptyNotice" class="card" style="text-align:center; color:#999; padding: 60px 20px;">
-          <h3>현재 대기 중인 진단 결과가 없습니다.</h3>
-          <p>왼쪽 칸에 채널의 문제점을 적고 분석을 시작해보세요.</p>
+          <h3 id="emptyTitle">현재 대기 중인 진단 결과가 없습니다.</h3>
+          <p id="emptyDesc">왼쪽 칸에 채널의 문제점을 적고 분석을 시작해보세요.</p>
         </div>
       </div>
     </div>
@@ -124,37 +135,33 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 
   <script>
-    // 파이어베이스 의존성 완전히 제거, 브라우저 로컬 스토리지를 이용해 데이터 저장
     let queue = JSON.parse(localStorage.getItem('ytQueue')) || [];
-
-    // 화면 로딩 시 데이터 렌더링
     window.onload = renderDashboard;
 
-    // AI API 호출 (새로 주신 API 키 적용)
     document.getElementById('aiGenBtn').onclick = async () => {
-      const channelName = document.getElementById('channelNameInput').value || "익명 채널";
-      const problem = document.getElementById('problemInput').value;
+      const channelName = document.getElementById('channelNameInput').value.trim() || "익명 채널";
+      const problem = document.getElementById('problemInput').value.trim();
       const tone = document.getElementById('toneSelect').value;
       
       if(!problem) {
         alert("채널의 문제점이나 고민을 반드시 입력해주세요!");
+        document.getElementById('problemInput').focus();
         return;
       }
 
       const btn = document.getElementById('aiGenBtn');
-      btn.innerText = "상위 1% AI가 채널을 해부하는 중... ⏳"; 
+      btn.innerHTML = `<span class="loader"></span> 상위 1% AI가 채널 분석 중...`; 
       btn.disabled = true;
 
-      // 새로 주신 API KEY 적용
+      // 사용자 제공 API KEY
       const API_KEY = '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'; 
 
-      // AI에게 내릴 강력한 시스템 명령어
       const systemPrompt = `당신은 대한민국 최고의 유튜브 채널 기획자이자 컨설턴트입니다. 
 요청된 톤앤매너: [${tone}]
 
 사용자가 입력한 채널의 상황과 문제점을 바탕으로 다음 3가지를 명확하게 정리해서 답변해주세요:
-1. 🔍 [채널 상태 및 원인 분석]: 왜 이런 문제가 발생했는지 근본적인 원인 파악
-2. 🚨 [문제점 지적 및 피드백]: 성장을 가로막는 치명적인 실수나 문제점 지적
+1. 🔍 [채널 상태 분석]: 왜 이런 문제가 발생했는지 근본적인 원인 파악
+2. 🚨 [문제점 지적 및 피드백]: 성장을 가로막는 치명적인 실수 지적
 3. 💡 [맞춤 대박 콘텐츠 솔루션]: 당장 시도해볼 만한 구체적인 영상 기획안 2가지 추천
 
 답변은 가독성 좋게 줄바꿈, 글머리 기호, 이모지를 적극적으로 사용해주세요.`;
@@ -167,20 +174,24 @@
             'Authorization': `Bearer ${API_KEY}` 
           },
           body: JSON.stringify({
-            model: "gpt-4o-mini", // 빠르고 저렴한 모델
+            model: "gpt-4o-mini",
             messages: [
               {role: "system", content: systemPrompt}, 
               {role: "user", content: `채널명: ${channelName}\n현재 가장 큰 문제점: ${problem}`}
-            ]
+            ],
+            temperature: 0.7
           })
         });
         
+        // 에러 처리 강화: API 키 문제인지 정확히 판별
+        if (!resp.ok) {
+            const errData = await resp.json();
+            throw new Error(`[${resp.status}] ${errData.error?.message || 'API 요청 실패'}`);
+        }
+
         const json = await resp.json();
-        if(json.error) throw new Error(json.error.message);
-        
         const aiText = json.choices[0].message.content;
 
-        // 새 분석 결과를 배열 맨 앞에 추가
         const newItem = {
           id: Date.now().toString(),
           title: `[${channelName}] 채널 진단 결과`,
@@ -189,39 +200,33 @@
         };
         queue.unshift(newItem); 
         
-        // 로컬 스토리지에 저장
         localStorage.setItem('ytQueue', JSON.stringify(queue));
-        
-        // 입력창 초기화
         document.getElementById('problemInput').value = "";
         
         renderDashboard();
 
       } catch(e) {
-        alert("AI 분석 실패. API 키가 만료되었거나 한도 초과일 수 있습니다.\n\n오류 내용: " + e.message);
+        console.error(e);
+        alert(`AI 분석에 실패했습니다.\n\n원인: API 키가 만료되었거나 요금 한도를 초과했습니다.\n\n상세 오류:\n${e.message}`);
       } finally {
-        btn.innerText = "🚀 AI 채널 분석 시작하기"; 
+        btn.innerHTML = "🚀 AI 채널 분석 시작하기"; 
         btn.disabled = false;
       }
     };
 
-    // UI 렌더링 함수
     function renderDashboard() {
       const pipeline = document.getElementById('pipeline');
       pipeline.innerHTML = "";
 
       if(queue.length > 0) {
-        // 메인 화면에 가장 최근(첫번째) 결과 표시
         document.getElementById('targetCard').classList.remove('hidden');
         document.getElementById('emptyNotice').classList.add('hidden');
         
         document.getElementById('nowTitle').innerText = queue[0].title;
         document.getElementById('nowDesc').innerText = queue[0].desc;
 
-        // 아래쪽 이전 기록 목록 렌더링
         queue.forEach((item, idx) => {
-          if(idx === 0) return; // 첫 번째 항목은 메인에 있으니 패스
-
+          if(idx === 0) return; 
           const div = document.createElement('div');
           div.className = 'pipeline-item';
           div.innerHTML = `
@@ -237,24 +242,21 @@
       }
     }
 
-    // 기록 삭제 (완료)
     document.getElementById('completeBtn').onclick = () => {
       if(queue.length > 0) {
-        queue.shift(); // 첫 번째 항목 제거
+        queue.shift(); 
         localStorage.setItem('ytQueue', JSON.stringify(queue));
         renderDashboard();
         confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
       }
     };
 
-    // 개별 기록 삭제 함수
     window.deleteItem = function(id) {
       queue = queue.filter(item => item.id !== id);
       localStorage.setItem('ytQueue', JSON.stringify(queue));
       renderDashboard();
     };
 
-    // TTS 음성 브리핑 (기존 유지)
     document.getElementById('ttsBtn').onclick = () => {
       const text = document.getElementById('nowDesc').innerText;
       speechSynthesis.cancel();
