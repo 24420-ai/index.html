@@ -153,8 +153,11 @@
       btn.innerHTML = `<span class="loader"></span> 상위 1% AI가 채널 분석 중...`; 
       btn.disabled = true;
 
-      // 사용자 제공 API KEY
-      const API_KEY = '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'; 
+      // ==============================================================
+      // 🚨 새로 주신 세 번째 API KEY 적용 완료 부분 🚨
+      // 만약 이 키도 막혔다면, 꼭 혼자서 새 키를 발급받은 뒤 아래 문자열만 교체하세요!
+      const API_KEY = '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'; 
+      // ==============================================================
 
       const systemPrompt = `당신은 대한민국 최고의 유튜브 채널 기획자이자 컨설턴트입니다. 
 요청된 톤앤매너: [${tone}]
@@ -183,7 +186,6 @@
           })
         });
         
-        // 에러 처리 강화: API 키 문제인지 정확히 판별
         if (!resp.ok) {
             const errData = await resp.json();
             throw new Error(`[${resp.status}] ${errData.error?.message || 'API 요청 실패'}`);
@@ -207,7 +209,7 @@
 
       } catch(e) {
         console.error(e);
-        alert(`AI 분석에 실패했습니다.\n\n원인: API 키가 만료되었거나 요금 한도를 초과했습니다.\n\n상세 오류:\n${e.message}`);
+        alert(`AI 분석에 실패했습니다.\n\n원인: API 키가 만료되었거나 채팅창 노출로 인해 차단되었습니다.\n\n상세 오류:\n${e.message}`);
       } finally {
         btn.innerHTML = "🚀 AI 채널 분석 시작하기"; 
         btn.disabled = false;
