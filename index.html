@@ -3,270 +3,855 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>YT PD STUDIO | AI 채널 팩폭 진단기</title>
+  <title>유튜브 AI 크리에이터 스튜디오</title>
   <style>
-    :root {
-      --yt-red: #FF0000;
-      --yt-dark-red: #D32F2F;
-      --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    * {
+      box-sizing: border-box;
     }
 
-    * { box-sizing: border-box; font-family: 'Pretendard', 'Malgun Gothic', sans-serif; }
-    body { margin: 0; background: var(--bg-gradient); min-height: 100vh; padding: 20px; color: #2c3e50; }
-
-    .container { max-width: 1200px; margin: 0 auto; }
-    header { text-align: left; margin-bottom: 30px; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px; }
-    h1 { font-size: 2.2rem; margin: 0; font-weight: 800; color: #2c3e50; }
-    .subtitle { color: #7f8c8d; font-size: 15px; margin-top: 5px; }
-
-    .main-grid { display: grid; grid-template-columns: 1fr 1.8fr; gap: 30px; }
-
-    .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 20px; }
-    .card-title { font-size: 18px; font-weight: bold; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #eee; padding-bottom: 10px;}
-
-    .input-group { margin-bottom: 15px; }
-    .input-group label { display: block; font-size: 13px; color: #555; margin-bottom: 5px; font-weight: bold; }
-    
-    textarea, input, select { 
-      width: 100%; padding: 12px; border: 1px solid #ddd; 
-      border-radius: 10px; outline: none; font-size: 14px; resize: vertical;
-    }
-    textarea { min-height: 110px; }
-    textarea:focus, input:focus, select:focus { border-color: var(--yt-red); }
-    
-    button { 
-      width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; 
-      transition: 0.3s; color: white; font-size: 15px;
-    }
-    button:disabled { background: #95a5a6 !important; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
-    
-    .btn-red { background: linear-gradient(to right, var(--yt-red), var(--yt-dark-red)); }
-    .btn-red:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,0,0,0.3); }
-    .btn-green { background: #27ae60; margin-top: 10px; }
-    .btn-green:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3); }
-
-    .next-video { border-left: 10px solid var(--yt-red); }
-    .premium-badge { color: var(--yt-red); font-weight: bold; font-size: 12px; margin-bottom: 10px; letter-spacing: 1px; }
-    .video-title { font-size: 22px; margin: 10px 0; font-weight: 800; color: #2c3e50; }
-    
-    .video-desc { 
-      color: #34495e; font-size: 15px; line-height: 1.7; margin-bottom: 20px; 
-      background: #f8f9fa; padding: 20px; border-radius: 12px; white-space: pre-wrap;
-      max-height: 500px; overflow-y: auto; border: 1px solid #eee;
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #e3f2fd, #fce4ec);
+      font-family: Arial, sans-serif;
+      color: #333;
     }
 
-    .pipeline-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; margin-top: 10px; }
-    .pipeline-item { background: #ebf5fb; padding: 15px; border-radius: 12px; border: 1px solid #d6eaf8; font-size: 14px; position: relative; }
-    .delete-btn { position: absolute; top: 10px; right: 10px; background: #e74c3c; color: white; border: none; border-radius: 5px; padding: 5px 10px; font-size: 12px; cursor: pointer; width: auto;}
-
-    .hidden { display: none; }
-    
-    /* 로딩 애니메이션 */
-    .loader {
-      border: 4px solid #f3f3f3; border-top: 4px solid var(--yt-red);
-      border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite;
-      display: inline-block; vertical-align: middle; margin-right: 8px;
+    .container {
+      width: min(1200px, 95%);
+      margin: 40px auto;
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.16);
     }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    h1 {
+      margin: 0 0 8px;
+      text-align: center;
+      font-size: 32px;
+      color: #1e88e5;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #777;
+      margin-bottom: 28px;
+      font-size: 15px;
+    }
+
+    /* 인증 섹션 스타일 */
+    .auth-box {
+      max-width: 420px;
+      margin: 40px auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: #f7f9fb;
+      padding: 24px;
+      border-radius: 20px;
+      border: 1px solid #edf1f5;
+    }
+
+    .auth-box h2 {
+      margin-top: 0;
+      font-size: 22px;
+      text-align: center;
+    }
+
+    .notice {
+      max-width: 420px;
+      margin: 20px auto 0;
+      padding: 14px;
+      border-radius: 14px;
+      background: #fff8e1;
+      color: #6d4c41;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    /* 메인 대시보드 레이아웃 */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+      padding: 14px 20px;
+      border-radius: 16px;
+      background: #f7f9fb;
+      border: 1px solid #edf1f5;
+    }
+
+    .user-info {
+      font-size: 14px;
+      color: #555;
+    }
+
+    /* 대시보드 그리드 구조 */
+    .studio-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 1000px) {
+      .studio-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .studio-card {
+      background: #ffffff;
+      border: 1px solid #edf1f5;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 14px;
+      color: #333;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 2px solid #f0f4f8;
+      padding-bottom: 8px;
+    }
+
+    /* 입력 폼 및 컴포넌트 공통 */
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      font-size: 14px;
+      outline: none;
+      font-family: Arial, sans-serif;
+      transition: 0.2s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: #42a5f5;
+      box-shadow: 0 0 0 3px rgba(66, 165, 245, 0.15);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 120px;
+      line-height: 1.5;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    button, .download-link {
+      border: none;
+      border-radius: 12px;
+      padding: 0 16px;
+      height: 40px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: 0.15s;
+      font-weight: bold;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    button:hover, .download-link:hover {
+      transform: translateY(-2px);
+      opacity: 0.9;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+      transform: none;
+    }
+
+    /* 버튼 색상 정의 */
+    .btn-blue { background: #42a5f5; color: white; }
+    .btn-purple { background: #7e57c2; color: white; }
+    .btn-green { background: #66bb6a; color: white; }
+    .btn-orange { background: #ffa726; color: white; }
+    .btn-red { background: #ef5350; color: white; }
+    .btn-dark { background: #455a64; color: white; }
+    .btn-gray { background: #b0bec5; color: white; }
+
+    /* 결과창 디자인 */
+    .output-box {
+      min-height: 150px;
+      max-height: 300px;
+      overflow-y: auto;
+      padding: 14px;
+      border-radius: 14px;
+      background: #f7f9fb;
+      border: 1px solid #edf1f5;
+      font-size: 14px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin-top: 10px;
+    }
+
+    .status-text {
+      font-size: 13px;
+      color: #666;
+      margin-top: 6px;
+      min-height: 18px;
+    }
+
+    /* TTS 전용 오디오 플레이어 */
+    audio {
+      width: 100%;
+      margin-top: 12px;
+    }
+
+    /* 데이터베이스 리스트 디자인 */
+    .db-form {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .db-form-row {
+      display: grid;
+      grid-template-columns: 1fr 2fr auto;
+      gap: 8px;
+    }
+    @media (max-width: 600px) {
+      .db-form-row { grid-template-columns: 1fr; }
+    }
+
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 500px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 14px;
+      border-radius: 14px;
+      background: #f7f9fb;
+      border: 1px solid #edf1f5;
+    }
+
+    .item-title { margin: 0 0 4px; font-size: 16px; font-weight: bold; }
+    .item-content { margin: 0; color: #555; font-size: 13px; line-height: 1.5; white-space: pre-wrap; }
+    .item-date { margin-top: 6px; font-size: 11px; color: #999; }
+
+    .edit-box {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .empty { text-align: center; padding: 20px; color: #888; }
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
+  <div class="container">
+    <h1>🎬 유튜브 AI 크리에이터 스튜디오</h1>
+    <div class="subtitle">Firebase 및 OpenAI API 통합 기획 시스템</div>
 
-  <div class="container" id="dashboard">
-    <header>
-      <h1>🎬 YT PD STUDIO : AI 채널 팩폭 진단기</h1>
-      <div class="subtitle">로그인 없이 바로 사용하는 유튜브 채널 분석 및 솔루션 대시보드</div>
-    </header>
+    <section id="authSection">
+      <div class="auth-box">
+        <h2>로그인 / 크리에이터 가입</h2>
+        <input id="emailInput" type="email" placeholder="이메일 주소" />
+        <input id="passwordInput" type="password" placeholder="비밀번호 (6자리 이상)" />
+        <button class="btn-blue" id="loginBtn">로그인</button>
+        <button class="btn-purple" id="signupBtn">회원가입</button>
+      </div>
+      <div class="notice">
+        • 처음 방문 시 회원가입을 먼저 진행해 주세요.<br />
+        • 가입된 정보와 데이터는 Firebase를 통해 안전하게 개인별로 격리 보관됩니다.
+      </div>
+    </section>
 
-    <div class="main-grid">
-      <div class="side-panel">
-        <div class="card">
-          <div class="card-title">📝 채널 진단 의뢰서</div>
-          
-          <div class="input-group">
-            <label>채널 이름 (선택)</label>
-            <input id="channelNameInput" type="text" placeholder="예: 코딩하는 감자" />
-          </div>
-
-          <div class="input-group">
-            <label>현재 채널의 가장 큰 문제점 (필수)</label>
-            <textarea id="problemInput" placeholder="예: 구독자는 1만명인데 조회수가 500도 안 나옵니다. 쇼츠만 터지고 롱폼은 안 봐요. 어떻게 해야 할까요?"></textarea>
-          </div>
-
-          <div class="input-group">
-            <label>원하는 진단 스타일</label>
-            <select id="toneSelect">
-              <option value="냉정하게 팩트폭행 해줘. 변명할 수 없게 아프게 찔러줘.">🔥 매운맛 (냉정한 팩트 폭행)</option>
-              <option value="친절하고 따뜻하게 위로하면서 문제점을 짚어줘.">🌱 순한맛 (따뜻한 피드백)</option>
-              <option value="오직 데이터와 객관적인 사실 기반으로 전문적으로 분석해줘.">📊 전문가맛 (객관적 컨설팅)</option>
-            </select>
-          </div>
-          
-          <button class="btn-red" id="aiGenBtn">🚀 AI 채널 분석 시작하기</button>
+    <section id="mainSection" class="hidden">
+      <div class="top-bar">
+        <div class="user-info">
+          접속 크리에이터 계정: <strong id="userEmail" style="color: #1e88e5;"></strong>
         </div>
+        <button class="btn-dark" id="logoutBtn">로그아웃</button>
       </div>
 
-      <div class="main-panel">
-        <div id="targetCard" class="card next-video hidden">
-          <div class="premium-badge">AI EXPERT CONSULTING RESULT</div>
-          <h1 class="video-title" id="nowTitle">분석 결과</h1>
-          
-          <div class="video-desc" id="nowDesc">분석 내용이 여기에 표시됩니다.</div>
-          
-          <div style="display: flex; gap: 10px;">
-            <button class="btn-red" id="completeBtn">✅ 솔루션 확인 완료 (기록 지우기)</button>
-            <button class="btn-green" id="ttsBtn">🔊 AI 보이스 브리핑 듣기</button>
-          </div>
-        </div>
+      <div class="studio-grid">
         
-        <div id="emptyNotice" class="card" style="text-align:center; color:#999; padding: 60px 20px;">
-          <h3 id="emptyTitle">현재 대기 중인 진단 결과가 없습니다.</h3>
-          <p id="emptyDesc">왼쪽 칸에 채널의 문제점을 적고 분석을 시작해보세요.</p>
+        <div class="studio-card">
+          <div class="card-title">🤖 AI 채널 분석 및 대본 기획</div>
+          <textarea id="questionInput" placeholder="분석할 채널 아이디어나 기획하고 싶은 유튜브 대본의 주제를 상세히 작성해보세요.&#10;예: IT 리뷰 채널용 최신 스마트폰 트렌드 분석 및 숏폼 대본 짜줘."></textarea>
+          <div class="button-row">
+            <button class="btn-gray" id="clearGptBtn">초기화</button>
+            <button class="btn-blue" id="askBtn">AI 기획 요청</button>
+          </div>
+          <div id="gptStatus" class="status-text"></div>
+          <div style="margin-top: 10px; font-weight: bold; font-size: 14px;">기획 분석 결과</div>
+          <div id="answerBox" class="output-box">아직 생성된 기획서가 없습니다.</div>
+          
+          <div class="button-row" style="margin-top: 12px; justify-content: flex-start;">
+            <button class="btn-orange" id="sendToTtsBtn" disabled>⚡ 이 결과를 음성 변환(TTS)으로 전송</button>
+            <button class="btn-green" id="sendToDbBtn" disabled>💾 이 결과를 내 콘텐츠함에 저장</button>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <div class="card" style="margin-top:30px;">
-      <div class="card-title">📚 이전 진단 기록 (브라우저에 자동 저장됨)</div>
-      <div id="pipeline" class="pipeline-grid"></div>
-    </div>
+        <div class="studio-card">
+          <div class="card-title">🎙️ AI 성우 내레이션 생성 (TTS)</div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+            <select id="modelSelect">
+              <option value="tts-1">tts-1 (고속 생성)</option>
+              <option value="tts-1-hd">tts-1-hd (고품질)</option>
+            </select>
+            <select id="voiceSelect">
+              <option value="alloy">alloy (기본)</option>
+              <option value="echo">echo</option>
+              <option value="fable">fable</option>
+              <option value="onyx">onyx (남성 저음)</option>
+              <option value="nova">nova (여성 밝은음)</option>
+              <option value="shimmer">shimmer</option>
+            </select>
+            <input id="speedInput" type="number" min="0.25" max="4.0" step="0.05" value="1.0" placeholder="속도(1.0)" />
+          </div>
+          <textarea id="textInput" placeholder="오디오 음성 파일로 변환할 대본 본문을 입력하세요. 왼쪽 AI 창에서 전송해 올 수도 있습니다."></textarea>
+          <div class="button-row">
+            <button class="btn-gray" id="clearTtsBtn">초기화</button>
+            <button class="btn-purple" id="makeBtn">AI 성우 음성 합성</button>
+          </div>
+          <div id="ttsStatus" class="status-text"></div>
+          
+          <div id="resultBox" class="hidden" style="margin-top: 15px; background: #f1f8e9; padding: 12px; border-radius: 12px;">
+            <div style="font-weight: bold; font-size: 14px; color: #33691e;">🎵 완성된 내레이션 파일</div>
+            <audio id="audioPlayer" controls></audio>
+            <div class="button-row" style="margin-top: 8px;">
+              <a id="downloadLink" class="download-link btn-purple" href="#" download="audio.mp3">mp3 다운로드</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="studio-card" style="grid-column: 1 / -1;">
+          <div class="card-title">🗄️ 내 크리에이티브 콘텐츠 저장소</div>
+          
+          <div class="db-form">
+            <div class="db-form-row">
+              <input id="titleInput" type="text" placeholder="제목 (예: 26년 6월 기획안)" />
+              <input id="contentInput" type="text" placeholder="상세 내용 요약 또는 대본 본문" />
+              <button class="btn-green" id="addBtn">수동 추가</button>
+            </div>
+            <div style="display:flex; justify-content: space-between; align-items:center; margin-top:6px;">
+              <button class="btn-dark" id="refreshBtn">🔄 데이터 실시간 동기화 상태 새로고침</button>
+              <div id="dbStatus" class="status-text" style="margin:0;"></div>
+            </div>
+          </div>
+
+          <div id="dataList" class="list"></div>
+        </div>
+
+      </div>
+    </section>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <script type="module">
+    // Firebase 모듈 로드
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      signOut,
+      onAuthStateChanged
+    } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+    import {
+      getDatabase,
+      ref,
+      push,
+      set,
+      update,
+      remove,
+      onValue,
+      off
+    } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
 
-  <script>
-    let queue = JSON.parse(localStorage.getItem('ytQueue')) || [];
-    window.onload = renderDashboard;
+    // 1. 설정 상수 구성 정보 (보내주신 고유 데이터 매핑)
+    const firebaseConfig = {
+      apiKey: "AIzaSyAheqYQYhLqSf9XPcbhTjYLnUu9H0qvSFs",
+      authDomain: "test-d5626.firebaseapp.com",
+      databaseURL: "https://test-d5626-default-rtdb.firebaseio.com",
+      projectId: "test-d5626",
+      storageBucket: "test-d5626.firebasestorage.app",
+      messagingSenderId: "669003499721",
+      appId: "1:669003499721:web:cf2ce06f7c641ffc2f2518",
+      measurementId: "G-J1D6F70JE2"
+    };
 
-    document.getElementById('aiGenBtn').onclick = async () => {
-      const channelName = document.getElementById('channelNameInput').value.trim() || "익명 채널";
-      const problem = document.getElementById('problemInput').value.trim();
-      const tone = document.getElementById('toneSelect').value;
-      
-      if(!problem) {
-        alert("채널의 문제점이나 고민을 반드시 입력해주세요!");
-        document.getElementById('problemInput').focus();
+
+    const CHAT_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz-GuFs0JpiSEA5JOx2UzWFHCGR_BzDmqDwpt-GuaG_OMcOtMxDASiFfDHSVrmRDtoeyw/exec';
+    const TTS_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz-GuFs0JpiSEA5JOx2UzWFHCGR_BzDmqDwpt-GuaG_OMcOtMxDASiFfDHSVrmRDtoeyw/exec';
+
+    // 인스턴스 초기화
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const database = getDatabase(app);
+
+    // DOM 요소 캐싱
+    const authSection = document.getElementById('authSection');
+    const mainSection = document.getElementById('mainSection');
+    const emailInput = document.getElementById('emailInput');
+    const passwordInput = document.getElementById('passwordInput');
+    const loginBtn = document.getElementById('loginBtn');
+    const signupBtn = document.getElementById('signupBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const userEmail = document.getElementById('userEmail');
+
+    // GPT 관련 요소
+    const questionInput = document.getElementById('questionInput');
+    const answerBox = document.getElementById('answerBox');
+    const gptStatus = document.getElementById('gptStatus');
+    const askBtn = document.getElementById('askBtn');
+    const clearGptBtn = document.getElementById('clearGptBtn');
+    const sendToTtsBtn = document.getElementById('sendToTtsBtn');
+    const sendToDbBtn = document.getElementById('sendToDbBtn');
+
+    // TTS 관련 요소
+    const textInput = document.getElementById('textInput');
+    const modelSelect = document.getElementById('modelSelect');
+    const voiceSelect = document.getElementById('voiceSelect');
+    const speedInput = document.getElementById('speedInput');
+    const makeBtn = document.getElementById('makeBtn');
+    const clearTtsBtn = document.getElementById('clearTtsBtn');
+    const ttsStatus = document.getElementById('ttsStatus');
+    const resultBox = document.getElementById('resultBox');
+    const audioPlayer = document.getElementById('audioPlayer');
+    const downloadLink = document.getElementById('downloadLink');
+
+    // 데이터베이스 관련 요소
+    const titleInput = document.getElementById('titleInput');
+    const contentInput = document.getElementById('contentInput');
+    const addBtn = document.getElementById('addBtn');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const dataList = document.getElementById('dataList');
+    const dbStatusBox = document.getElementById('dbStatus');
+
+    let currentUser = null;
+    let currentItemsRef = null;
+    let latestGptResponse = ""; // 연동 전송을 위한 캐싱 전역 변수
+
+    // ==========================================
+    // [A] Firebase 인증 및 세션 파트
+    // ==========================================
+    function getAuthCredentials() {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value.trim();
+      if (!email || !password) {
+        alert('이메일과 비밀번호를 모두 입력해주세요.');
+        return null;
+      }
+      if (password.length < 6) {
+        alert('비밀번호는 안전을 위해 6자리 이상이어야 합니다.');
+        return null;
+      }
+      return { email, password };
+    }
+
+    signupBtn.addEventListener('click', async () => {
+      const credentials = getAuthCredentials();
+      if (!credentials) return;
+      try {
+        await createUserWithEmailAndPassword(auth, credentials.email, credentials.password);
+        alert('크리에이터 회원가입이 완료되었습니다!');
+      } catch (error) {
+        alert(getKoreanErrorMessage(error.code));
+      }
+    });
+
+    loginBtn.addEventListener('click', async () => {
+      const credentials = getAuthCredentials();
+      if (!credentials) return;
+      try {
+        await signInWithEmailAndPassword(auth, credentials.email, credentials.password);
+      } catch (error) {
+        alert(getKoreanErrorMessage(error.code));
+      }
+    });
+
+    logoutBtn.addEventListener('click', async () => {
+      try {
+        await signOut(auth);
+      } catch (error) {
+        alert('로그아웃 처리에 실패했습니다.');
+      }
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUser = user;
+        authSection.classList.add('hidden');
+        mainSection.classList.remove('hidden');
+        userEmail.textContent = user.email;
+        emailInput.value = '';
+        passwordInput.value = '';
+        startRealtimeDataListener(user.uid);
+      } else {
+        currentUser = null;
+        authSection.classList.remove('hidden');
+        mainSection.classList.add('hidden');
+        userEmail.textContent = '';
+        dataList.innerHTML = '';
+        stopRealtimeDataListener();
+      }
+    });
+
+    // ==========================================
+    // [B] ChatGPT AI 채널 분석기 파트
+    // ==========================================
+    askBtn.addEventListener('click', askChatGPT);
+    clearGptBtn.addEventListener('click', () => {
+      questionInput.value = '';
+      answerBox.textContent = '아직 생성된 기획서가 없습니다.';
+      gptStatus.textContent = '';
+      latestGptResponse = "";
+      sendToTtsBtn.disabled = true;
+      sendToDbBtn.disabled = true;
+    });
+
+    async function askChatGPT() {
+      const question = questionInput.value.trim();
+      if (!question) {
+        alert('AI에게 분석 또는 기획할 주제를 입력해 주세요.');
         return;
       }
 
-      const btn = document.getElementById('aiGenBtn');
-      btn.innerHTML = `<span class="loader"></span> 상위 1% AI가 채널 분석 중...`; 
-      btn.disabled = true;
-
-      // ==============================================================
-      // 🚨 새로 주신 세 번째 API KEY 적용 완료 부분 🚨
-      // 만약 이 키도 막혔다면, 꼭 혼자서 새 키를 발급받은 뒤 아래 문자열만 교체하세요!
-      const API_KEY = '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'; 
-      // ==============================================================
-
-      const systemPrompt = `당신은 대한민국 최고의 유튜브 채널 기획자이자 컨설턴트입니다. 
-요청된 톤앤매너: [${tone}]
-
-사용자가 입력한 채널의 상황과 문제점을 바탕으로 다음 3가지를 명확하게 정리해서 답변해주세요:
-1. 🔍 [채널 상태 분석]: 왜 이런 문제가 발생했는지 근본적인 원인 파악
-2. 🚨 [문제점 지적 및 피드백]: 성장을 가로막는 치명적인 실수 지적
-3. 💡 [맞춤 대박 콘텐츠 솔루션]: 당장 시도해볼 만한 구체적인 영상 기획안 2가지 추천
-
-답변은 가독성 좋게 줄바꿈, 글머리 기호, 이모지를 적극적으로 사용해주세요.`;
-
       try {
-        const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+        setGptLoading(true);
+        answerBox.textContent = 'AI가 크리에이터님의 기획안을 분석하고 대본을 구성하는 중입니다...';
+        gptStatus.textContent = 'Google Apps Script 프록시 통신 중...';
+
+        const response = await fetch(CHAT_APPS_SCRIPT_URL, {
           method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json', 
-            'Authorization': `Bearer ${API_KEY}` 
-          },
-          body: JSON.stringify({
-            model: "gpt-4o-mini",
-            messages: [
-              {role: "system", content: systemPrompt}, 
-              {role: "user", content: `채널명: ${channelName}\n현재 가장 큰 문제점: ${problem}`}
-            ],
-            temperature: 0.7
-          })
+          body: JSON.stringify({ question: question })
         });
-        
-        if (!resp.ok) {
-            const errData = await resp.json();
-            throw new Error(`[${resp.status}] ${errData.error?.message || 'API 요청 실패'}`);
-        }
 
-        const json = await resp.json();
-        const aiText = json.choices[0].message.content;
+        const data = await response.json();
+        if (data.error) throw new Error(data.error);
 
-        const newItem = {
-          id: Date.now().toString(),
-          title: `[${channelName}] 채널 진단 결과`,
-          desc: aiText,
-          time: new Date().toLocaleString()
-        };
-        queue.unshift(newItem); 
+        const resultText = data.answer || '답변을 생성하지 못했습니다.';
+        answerBox.textContent = resultText;
+        latestGptResponse = resultText; // 데이터 캐싱
+        gptStatus.textContent = '분석 완료';
         
-        localStorage.setItem('ytQueue', JSON.stringify(queue));
-        document.getElementById('problemInput').value = "";
-        
-        renderDashboard();
-
-      } catch(e) {
-        console.error(e);
-        alert(`AI 분석에 실패했습니다.\n\n원인: API 키가 만료되었거나 채팅창 노출로 인해 차단되었습니다.\n\n상세 오류:\n${e.message}`);
+        // 연동 버튼 활성화
+        sendToTtsBtn.disabled = false;
+        sendToDbBtn.disabled = false;
+      } catch (error) {
+        console.error(error);
+        answerBox.textContent = '오류 발생: ' + error.message;
+        gptStatus.textContent = '요청 실패';
       } finally {
-        btn.innerHTML = "🚀 AI 채널 분석 시작하기"; 
-        btn.disabled = false;
-      }
-    };
-
-    function renderDashboard() {
-      const pipeline = document.getElementById('pipeline');
-      pipeline.innerHTML = "";
-
-      if(queue.length > 0) {
-        document.getElementById('targetCard').classList.remove('hidden');
-        document.getElementById('emptyNotice').classList.add('hidden');
-        
-        document.getElementById('nowTitle').innerText = queue[0].title;
-        document.getElementById('nowDesc').innerText = queue[0].desc;
-
-        queue.forEach((item, idx) => {
-          if(idx === 0) return; 
-          const div = document.createElement('div');
-          div.className = 'pipeline-item';
-          div.innerHTML = `
-            <strong>${item.title}</strong><br>
-            <span style="font-size:12px; color:#888;">${item.time}</span>
-            <button class="delete-btn" onclick="deleteItem('${item.id}')">삭제</button>
-          `;
-          pipeline.appendChild(div);
-        });
-      } else {
-        document.getElementById('targetCard').classList.add('hidden');
-        document.getElementById('emptyNotice').classList.remove('hidden');
+        setGptLoading(false);
       }
     }
 
-    document.getElementById('completeBtn').onclick = () => {
-      if(queue.length > 0) {
-        queue.shift(); 
-        localStorage.setItem('ytQueue', JSON.stringify(queue));
-        renderDashboard();
-        confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+    function setGptLoading(isLoading) {
+      askBtn.disabled = isLoading;
+      askBtn.textContent = isLoading ? '생성 중...' : 'AI 기획 요청';
+    }
+
+    // 워크플로우 융합 연동 스위치 함수
+    sendToTtsBtn.addEventListener('click', () => {
+      if (!latestGptResponse) return;
+      textInput.value = latestGptResponse;
+      alert('AI가 작성한 원고 내용을 내레이션 스튜디오(오른쪽)로 전송했습니다!');
+      textInput.focus();
+    });
+
+    sendToDbBtn.addEventListener('click', async () => {
+      if (!latestGptResponse || !currentUser) return;
+      const rawPrompt = questionInput.value.trim();
+      const shortTitle = `AI 기획: ${rawPrompt.substring(0, 15)}...`;
+      
+      try {
+        const itemsRef = ref(database, `users/${currentUser.uid}/items`);
+        const newItemRef = push(itemsRef);
+        await set(newItemRef, {
+          title: shortTitle,
+          content: latestGptResponse,
+          createdAt: new Date().toLocaleString('ko-KR'),
+          updatedAt: ''
+        });
+        alert('생성된 AI 분석 결과 전체를 아카이브 저장소(하단)에 실시간 보관했습니다.');
+      } catch (error) {
+        alert('데이터 보관 중 오류가 발생했습니다.');
+      }
+    });
+
+    // ==========================================
+    // [C] OpenAI TTS 오디오 스튜디오 파트
+    // ==========================================
+    makeBtn.addEventListener('click', makeSpeech);
+    clearTtsBtn.addEventListener('click', () => {
+      textInput.value = '';
+      ttsStatus.textContent = '';
+      audioPlayer.removeAttribute('src');
+      downloadLink.href = '#';
+      resultBox.classList.add('hidden');
+    });
+
+    async function makeSpeech() {
+      const text = textInput.value.trim();
+      const model = modelSelect.value;
+      const voice = voiceSelect.value;
+      const speed = Number(speedInput.value || 1.0);
+
+      if (!text) {
+        alert('음성 성우로 변환할 원고 텍스트를 입력해주세요.');
+        return;
+      }
+      if (speed < 0.25 || speed > 4.0) {
+        alert('속도는 0.25에서 4.0 사이의 소수로 입력 가능합니다.');
+        return;
+      }
+
+      try {
+        setTtsLoading(true);
+        resultBox.classList.add('hidden');
+        ttsStatus.textContent = 'Apps Script 인프라를 통해 오디오 파일을 렌더링하는 중...';
+
+        const response = await fetch(TTS_APPS_SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({
+            type: 'tts',
+            text: text,
+            model: model,
+            voice: voice,
+            speed: speed
+          })
+        });
+
+        const data = await response.json();
+        if (data.error) throw new Error(data.error);
+        if (!data.audioBase64) throw new Error('음성 인코딩 스트림을 전송받지 못했습니다.');
+
+        const audioUrl = base64ToAudioUrl(data.audioBase64, 'audio/mpeg');
+        audioPlayer.src = audioUrl;
+        downloadLink.href = audioUrl;
+        downloadLink.download = `youtube-narration-${Date.now()}.mp3`;
+        resultBox.classList.remove('hidden');
+        ttsStatus.textContent = '음성 소스 생성 성공';
+      } catch (error) {
+        console.error(error);
+        ttsStatus.textContent = '인프라 에러';
+        alert('TTS 생성 에러:\n' + error.message);
+      } finally {
+        setTtsLoading(false);
+      }
+    }
+
+    function setTtsLoading(isLoading) {
+      makeBtn.disabled = isLoading;
+      makeBtn.textContent = isLoading ? '성우 합성 중...' : 'AI 성우 음성 합성';
+    }
+
+    function base64ToAudioUrl(base64, mimeType) {
+      const byteCharacters = atob(base64);
+      const byteArrays = [];
+      for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+        const slice = byteCharacters.slice(offset, offset + 512);
+        const byteNumbers = new Array(slice.length);
+        for (let i = 0; i < slice.length; i++) {
+          byteNumbers[i] = slice.charCodeAt(i);
+        }
+        byteArrays.push(new Uint8Array(byteNumbers));
+      }
+      return URL.createObjectURL(new Blob(byteArrays, { type: mimeType }));
+    }
+
+    // ==========================================
+    // [D] Firebase Realtime Database 개인 저장소 관리 파트
+    // ==========================================
+    addBtn.addEventListener('click', addData);
+    refreshBtn.addEventListener('click', () => {
+      if (currentUser) startRealtimeDataListener(currentUser.uid);
+    });
+
+    function startRealtimeDataListener(uid) {
+      stopRealtimeDataListener();
+      dbStatusBox.textContent = '스토리지 연결 중...';
+      currentItemsRef = ref(database, `users/${uid}/items`);
+
+      onValue(currentItemsRef, (snapshot) => {
+        const data = snapshot.val();
+        renderData(data);
+        dbStatusBox.textContent = '동기화 완료';
+      }, (error) => {
+        console.error(error);
+        dbStatusBox.textContent = '보안 규칙 거부됨';
+      });
+    }
+
+    function stopRealtimeDataListener() {
+      if (currentItemsRef) {
+        off(currentItemsRef);
+        currentItemsRef = null;
+      }
+    }
+
+    async function addData() {
+      if (!currentUser) return;
+      const title = titleInput.value.trim();
+      const content = contentInput.value.trim();
+
+      if (!title || !content) {
+        alert('저장소에 보관할 제목과 내용 정보를 모두 입력하세요.');
+        return;
+      }
+
+      try {
+        const itemsRef = ref(database, `users/${currentUser.uid}/items`);
+        await set(push(itemsRef), {
+          title,
+          content,
+          createdAt: new Date().toLocaleString('ko-KR'),
+          updatedAt: ''
+        });
+        titleInput.value = '';
+        contentInput.value = '';
+      } catch (error) {
+        alert('데이터 기록 실패');
+      }
+    }
+
+    // 전역 바인딩 스위치 (inline onclick 대응)
+    window.deleteData = async function(id) {
+      if (!currentUser || !confirm('해당 콘텐츠 아카이브를 영구 삭제하시겠습니까?')) return;
+      try {
+        await remove(ref(database, `users/${currentUser.uid}/items/${id}`));
+      } catch (error) {
+        alert('삭제 오류');
       }
     };
 
-    window.deleteItem = function(id) {
-      queue = queue.filter(item => item.id !== id);
-      localStorage.setItem('ytQueue', JSON.stringify(queue));
-      renderDashboard();
+    window.updateData = async function(id) {
+      if (!currentUser) return;
+      const editTitle = document.getElementById(`edit-title-${id}`).value.trim();
+      const editContent = document.getElementById(`edit-content-${id}`).value.trim();
+
+      if (!editTitle || !editContent) {
+        alert('수정 데이터를 채워주세요.');
+        return;
+      }
+
+      try {
+        await update(ref(database, `users/${currentUser.uid}/items/${id}`), {
+          title: editTitle,
+          content: editContent,
+          updatedAt: new Date().toLocaleString('ko-KR')
+        });
+      } catch (error) {
+        alert('수정 반영 실패');
+      }
     };
 
-    document.getElementById('ttsBtn').onclick = () => {
-      const text = document.getElementById('nowDesc').innerText;
-      speechSynthesis.cancel();
-      const msg = new SpeechSynthesisUtterance(text);
-      msg.lang = 'ko-KR';
-      msg.rate = 1.1; 
-      speechSynthesis.speak(msg);
+    window.showEditForm = function(id, title, content) {
+      const itemBox = document.getElementById(`item-${id}`);
+      itemBox.innerHTML = `
+        <div class="edit-box" style="grid-column: 1 / -1;">
+          <input id="edit-title-${id}" type="text" value="${title}" />
+          <textarea id="edit-content-${id}">${content}</textarea>
+          <div class="button-row">
+            <button class="btn-purple" onclick="updateData('${id}')">저장</button>
+            <button class="btn-gray" onclick="startRealtimeDataListener(currentUser.uid)">취소</button>
+          </div>
+        </div>
+      `;
     };
+
+    function renderData(data) {
+      dataList.innerHTML = '';
+      if (!data) {
+        dataList.innerHTML = '<div class="empty">저장소에 보관된 아이디어 기획안이 없습니다. 상단에서 백업하거나 수동 입력하세요.</div>';
+        return;
+      }
+
+      Object.entries(data).reverse().forEach(([id, item]) => {
+        const div = document.createElement('div');
+        div.className = 'item';
+        div.id = `item-${id}`;
+
+        const escapedTitle = escapeHTML(item.title || '');
+        const escapedContent = escapeHTML(item.content || '');
+        const attrTitle = escapeForAttribute(item.title || '');
+        const attrContent = escapeForAttribute(item.content || '');
+
+        div.innerHTML = `
+          <div>
+            <p class="item-title">${escapedTitle}</p>
+            <p class="item-content">${escapedContent}</p>
+            <div class="item-date">
+              등록: ${item.createdAt || '-'} ${item.updatedAt ? ` | 수정: ${item.updatedAt}` : ''}
+            </div>
+          </div>
+          <div class="item-actions" style="display:flex; flex-direction:column; gap:4px;">
+            <button class="btn-orange" style="height:32px; font-size:12px;" onclick="showEditForm('${id}', '${attrTitle}', '${attrContent}')">수정</button>
+            <button class="btn-red" style="height:32px; font-size:12px;" onclick="deleteData('${id}')">삭제</button>
+          </div>
+        `;
+        dataList.appendChild(div);
+      });
+    }
+
+    // 헬퍼 문자열 변환 이스케이프 유틸 함수
+    function escapeHTML(text) {
+      return String(text)
+        .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;').replaceAll("'", '&#039;');
+    }
+    function escapeForAttribute(text) {
+      return escapeHTML(text).replaceAll('`', '&#096;');
+    }
+
+    function getKoreanErrorMessage(code) {
+      switch (code) {
+        case 'auth/email-already-in-use': return '이미 가입된 크리에이터 이메일입니다.';
+        case 'auth/invalid-email': return '이메일 계정 형식이 잘못되었습니다.';
+        case 'auth/weak-password': return '비밀번호 강도가 약합니다. 6자리 이상 필요합니다.';
+        case 'auth/user-not-found': return '등록되지 않은 계정입니다.';
+        case 'auth/wrong-password': return '비밀번호를 다시 확인하세요.';
+        case 'auth/invalid-credential': return '계정 및 패스워드 인증 증명이 올바르지 않습니다.';
+        case 'auth/network-request-failed': return '서버 네트워크 통신 회선 장애가 검지되었습니다.';
+        default: return `플랫폼 시스템 처리 오류: ${code}`;
+      }
+    }
+
+    // 단축키 매핑 (Ctrl + Enter)
+    document.addEventListener('keydown', function(event) {
+      if (event.key !== 'Enter') return;
+      const activeId = document.activeElement.id;
+      if ((activeId === 'emailInput' || activeId === 'passwordInput') && !event.ctrlKey) {
+        loginBtn.click();
+      }
+      if (event.ctrlKey) {
+        if (activeId === 'questionInput') askChatGPT();
+        if (activeId === 'textInput') makeSpeech();
+      }
+    });
   </script>
 </body>
 </html>
