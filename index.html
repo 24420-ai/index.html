@@ -370,7 +370,6 @@
   </div>
 
   <script type="module">
-    // Firebase 모듈 로드
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
     import {
       getAuth,
@@ -390,7 +389,7 @@
       off
     } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
 
-    // 1. 설정 상수 구성 정보 (보내주신 고유 데이터 매핑)
+    // Firebase 구성 정보
     const firebaseConfig = {
       apiKey: "AIzaSyAheqYQYhLqSf9XPcbhTjYLnUu9H0qvSFs",
       authDomain: "test-d5626.firebaseapp.com",
@@ -401,8 +400,7 @@
       appId: "1:669003499721:web:cf2ce06f7c641ffc2f2518",
       measurementId: "G-J1D6F70JE2"
     };
-
-
+    // Google Apps Script 엔드포인트 URL
     const CHAT_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz-GuFs0JpiSEA5JOx2UzWFHCGR_BzDmqDwpt-GuaG_OMcOtMxDASiFfDHSVrmRDtoeyw/exec';
     const TTS_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz-GuFs0JpiSEA5JOx2UzWFHCGR_BzDmqDwpt-GuaG_OMcOtMxDASiFfDHSVrmRDtoeyw/exec';
 
@@ -452,7 +450,7 @@
 
     let currentUser = null;
     let currentItemsRef = null;
-    let latestGptResponse = ""; // 연동 전송을 위한 캐싱 전역 변수
+    let latestGptResponse = ""; 
 
     // ==========================================
     // [A] Firebase 인증 및 세션 파트
@@ -554,10 +552,9 @@
 
         const resultText = data.answer || '답변을 생성하지 못했습니다.';
         answerBox.textContent = resultText;
-        latestGptResponse = resultText; // 데이터 캐싱
+        latestGptResponse = resultText; 
         gptStatus.textContent = '분석 완료';
         
-        // 연동 버튼 활성화
         sendToTtsBtn.disabled = false;
         sendToDbBtn.disabled = false;
       } catch (error) {
@@ -574,7 +571,6 @@
       askBtn.textContent = isLoading ? '생성 중...' : 'AI 기획 요청';
     }
 
-    // 워크플로우 융합 연동 스위치 함수
     sendToTtsBtn.addEventListener('click', () => {
       if (!latestGptResponse) return;
       textInput.value = latestGptResponse;
@@ -646,8 +642,15 @@
         });
 
         const data = await response.json();
-        if (data.error) throw new Error(data.error);
-        if (!data.audioBase64) throw new Error('음성 인코딩 스트림을 전송받지 못했습니다.');
+        
+        // 중요: 서버에서 온 에러 메시지를 가독성 있게 팝업으로 띄우기
+        if (data.error) {
+          throw new Error(data.error);
+        }
+        
+        if (!data.audioBase64) {
+          throw new Error('음성 인코딩 스트림을 전송받지 못했습니다.');
+        }
 
         const audioUrl = base64ToAudioUrl(data.audioBase64, 'audio/mpeg');
         audioPlayer.src = audioUrl;
@@ -657,7 +660,7 @@
         ttsStatus.textContent = '음성 소스 생성 성공';
       } catch (error) {
         console.error(error);
-        ttsStatus.textContent = '인프라 에러';
+        ttsStatus.textContent = '생성 오류';
         alert('TTS 생성 에러:\n' + error.message);
       } finally {
         setTtsLoading(false);
@@ -738,7 +741,6 @@
       }
     }
 
-    // 전역 바인딩 스위치 (inline onclick 대응)
     window.deleteData = async function(id) {
       if (!currentUser || !confirm('해당 콘텐츠 아카이브를 영구 삭제하시겠습니까?')) return;
       try {
@@ -817,7 +819,6 @@
       });
     }
 
-    // 헬퍼 문자열 변환 이스케이프 유틸 함수
     function escapeHTML(text) {
       return String(text)
         .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
