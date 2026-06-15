@@ -401,7 +401,7 @@
       measurementId: "G-J1D6F70JE2"
     };
     
-    // Google Apps Script 통합 엔드포인트 URL
+    // Google Apps Script 통합 엔드포인트 URL (앱스 스크립트 배포 후 획득한 URL을 여기에 기입하세요)
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbztPE26shDciJyL9cgTI7S9X8nhgHLCOLBejlGxC3GctnAGCWHQghGgPy06E282cHBnXQ/exec';
 
     // 인스턴스 초기화
@@ -835,24 +835,4 @@
         case 'auth/weak-password': return '비밀번호 강도가 약합니다. 6자리 이상 필요합니다.';
         case 'auth/user-not-found': return '등록되지 않은 계정입니다.';
         case 'auth/wrong-password': return '비밀번호를 다시 확인하세요.';
-        case 'auth/invalid-credential': return '계정 및 패스워드 인증 증명이 올바르지 않습니다.';
-        case 'auth/network-request-failed': return '서버 네트워크 통신 회선 장애가 검지되었습니다.';
-        default: return `플랫폼 시스템 처리 오류: ${code}`;
-      }
-    }
-
-    // 단축키 매핑 (Ctrl + Enter)
-    document.addEventListener('keydown', function(event) {
-      if (event.key !== 'Enter') return;
-      const activeId = document.activeElement.id;
-      if ((activeId === 'emailInput' || activeId === 'passwordInput') && !event.ctrlKey) {
-        loginBtn.click();
-      }
-      if (event.ctrlKey) {
-        if (activeId === 'questionInput') askChatGPT();
-        if (activeId === 'textInput') makeSpeech();
-      }
-    });
-  </script>
-</body>
-</html>
+        case 'auth/invalid-credential': return
